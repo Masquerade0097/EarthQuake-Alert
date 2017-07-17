@@ -17,6 +17,7 @@ package com.example.android.quakereport;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -33,10 +34,12 @@ public class EarthquakeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.earthquake_activity);
+//
+        new EarthquakeTask().execute(QueryUtils.SAMPLE_JSON_RESPONSE);
+    }
 
-        // Get the list of earthquakes from {@link QueryUtils}
-        ArrayList<Earthquake> earthquakes = QueryUtils.extractEarthquakes();
 
+    private void updateUi(ArrayList<Earthquake> earthquakes) {
         // Find a reference to the {@link ListView} in the layout
         ListView earthquakeListView = (ListView) findViewById(R.id.list);
 
@@ -65,5 +68,28 @@ public class EarthquakeActivity extends AppCompatActivity {
                 startActivity(websiteIntent);
             }
         });
+
     }
+
+
+    private class EarthquakeTask extends AsyncTask<String, Void, ArrayList<Earthquake>> {
+
+
+        protected ArrayList<Earthquake> doInBackground(String... params) {
+
+            if (params.length < 1 || params[0] == null) {
+                return null;
+            }
+
+            return QueryUtils.fetchEarthquakeData(params[0]);
+        }
+
+        protected void onPostExecute(ArrayList<Earthquake> earthquakes) {
+            if (earthquakes == null)
+                return;
+            updateUi(earthquakes);
+        }
+
+    }
+
 }
