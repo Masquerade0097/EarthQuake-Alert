@@ -15,9 +15,10 @@
  */
 package com.example.android.quakereport;
 
+import android.app.LoaderManager;
 import android.content.Intent;
+import android.content.Loader;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -26,7 +27,9 @@ import android.widget.ListView;
 
 import java.util.ArrayList;
 
-public class EarthquakeActivity extends AppCompatActivity {
+import static com.example.android.quakereport.QueryUtils.SAMPLE_JSON_RESPONSE;
+
+public class EarthquakeActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<ArrayList<Earthquake>> {
 
     public static final String LOG_TAG = EarthquakeActivity.class.getName();
 
@@ -34,12 +37,28 @@ public class EarthquakeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.earthquake_activity);
-//
-        new EarthquakeTask().execute(QueryUtils.SAMPLE_JSON_RESPONSE);
+
+        getLoaderManager().initLoader(0,null,EarthquakeActivity.this).forceLoad();
+
+    }
+
+    @Override
+    public Loader<ArrayList<Earthquake>> onCreateLoader(int id, Bundle args){
+        return new EarthquakeLoader(this,SAMPLE_JSON_RESPONSE);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<ArrayList<Earthquake>> loader, ArrayList<Earthquake> data) {
+        updateUi(data);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<ArrayList<Earthquake>> loader) {
+
     }
 
 
-    private void updateUi(ArrayList<Earthquake> earthquakes) {
+    private void updateUi(ArrayList<Earthquake> earthquakes){
         // Find a reference to the {@link ListView} in the layout
         ListView earthquakeListView = (ListView) findViewById(R.id.list);
 
@@ -68,27 +87,6 @@ public class EarthquakeActivity extends AppCompatActivity {
                 startActivity(websiteIntent);
             }
         });
-
-    }
-
-
-    private class EarthquakeTask extends AsyncTask<String, Void, ArrayList<Earthquake>> {
-
-
-        protected ArrayList<Earthquake> doInBackground(String... params) {
-
-            if (params.length < 1 || params[0] == null) {
-                return null;
-            }
-
-            return QueryUtils.fetchEarthquakeData(params[0]);
-        }
-
-        protected void onPostExecute(ArrayList<Earthquake> earthquakes) {
-            if (earthquakes == null)
-                return;
-            updateUi(earthquakes);
-        }
 
     }
 
