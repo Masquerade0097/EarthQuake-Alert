@@ -24,6 +24,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 
@@ -32,11 +33,16 @@ import static com.example.android.quakereport.QueryUtils.SAMPLE_JSON_RESPONSE;
 public class EarthquakeActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<ArrayList<Earthquake>> {
 
     public static final String LOG_TAG = EarthquakeActivity.class.getName();
+    TextView emptyTextView = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.earthquake_activity);
+
+        ListView earthquakeListView = (ListView) findViewById(R.id.list);
+        emptyTextView = (TextView) findViewById(R.id.empty_state);
+        earthquakeListView.setEmptyView(emptyTextView);
 
         getLoaderManager().initLoader(0,null,EarthquakeActivity.this).forceLoad();
 
@@ -50,6 +56,7 @@ public class EarthquakeActivity extends AppCompatActivity implements LoaderManag
     @Override
     public void onLoadFinished(Loader<ArrayList<Earthquake>> loader, ArrayList<Earthquake> data) {
         updateUi(data);
+        emptyTextView.setText("No Earthquakes found");
     }
 
     @Override
