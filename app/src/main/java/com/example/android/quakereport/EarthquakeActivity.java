@@ -24,10 +24,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import static android.view.View.GONE;
 import static com.example.android.quakereport.QueryUtils.SAMPLE_JSON_RESPONSE;
 
 public class EarthquakeActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<ArrayList<Earthquake>> {
@@ -45,27 +47,36 @@ public class EarthquakeActivity extends AppCompatActivity implements LoaderManag
         earthquakeListView.setEmptyView(emptyTextView);
 
         getLoaderManager().initLoader(0,null,EarthquakeActivity.this).forceLoad();
+//        Log.v(LOG_TAG,"\tinit loader done!! \n\n");
 
     }
 
     @Override
     public Loader<ArrayList<Earthquake>> onCreateLoader(int id, Bundle args){
+//        Log.v(LOG_TAG,"\tonCreateLoader done!!\n ");
         return new EarthquakeLoader(this,SAMPLE_JSON_RESPONSE);
     }
 
     @Override
     public void onLoadFinished(Loader<ArrayList<Earthquake>> loader, ArrayList<Earthquake> data) {
+        ProgressBar progress_bar = (ProgressBar) findViewById(R.id.progress_bar);
+        progress_bar.setVisibility(GONE);
         updateUi(data);
         emptyTextView.setText("No Earthquakes found");
+//        Log.v(LOG_TAG,"\tonLoaderfinished done!!\n ");
+
     }
 
     @Override
     public void onLoaderReset(Loader<ArrayList<Earthquake>> loader) {
-
+//        Log.v(LOG_TAG,"\tonLoaderReset done!!\n ");
     }
 
 
     private void updateUi(ArrayList<Earthquake> earthquakes){
+
+//        Log.v(LOG_TAG,"\tupdateUi done!!\n ");
+
         // Find a reference to the {@link ListView} in the layout
         ListView earthquakeListView = (ListView) findViewById(R.id.list);
 

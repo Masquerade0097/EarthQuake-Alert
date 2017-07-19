@@ -17,11 +17,13 @@ public class EarthquakeLoader extends AsyncTaskLoader<ArrayList<Earthquake>> {
 
             super(context);
             mStringUrl = stringUrl;
+//            Log.v(LOG_TAG,"\tEarthquakeLoader done!!\n ");
         }
 
         @Override
         public ArrayList<Earthquake> loadInBackground() {
 
+//            Log.v(LOG_TAG,"\tonLoadInBackground done!!\n ");
             return QueryUtils.fetchEarthquakeData(mStringUrl);
         }
 
