@@ -19,10 +19,12 @@ import android.app.LoaderManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.Loader;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -84,8 +86,21 @@ public class EarthquakeActivity extends AppCompatActivity implements LoaderManag
 
     @Override
     public Loader<ArrayList<Earthquake>> onCreateLoader(int id, Bundle args){
-//        Log.v(LOG_TAG,"\tonCreateLoader done!!\n ");
-        return new EarthquakeLoader(this,SAMPLE_JSON_RESPONSE);
+
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        String minMagnitude = sharedPref.getString(
+                getString(R.string.settings_min_magnitude_key),
+                getString(R.string.settings_min_magnitude_default));
+
+        Uri originalUri = Uri.parse(SAMPLE_JSON_RESPONSE);
+        Uri.Builder uriBuild = originalUri.buildUpon();
+
+        uriBuild.appendQueryParameter("format", "geojson");
+        uriBuild.appendQueryParameter("limit", "10");
+        uriBuild.appendQueryParameter("minmag", minMagnitude);
+        uriBuild.appendQueryParameter("orderby", "time");
+
+        return new EarthquakeLoader(this,uriBuild.toString());
     }
 
     @Override
